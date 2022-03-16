@@ -1,4 +1,4 @@
-# Uso da linguagem YCL.
+# Quickstart de Uso da linguagem YCL.
 
 
 A linguagem YC tem por finalidade ser usada para especificação de aspectos estáticos de dados um domínio de negócios, no contexto de aplicações de software em sistemas de informação. Sua razão de ser é a preocupação central quanto ao uso integrado à plataforma YC de forma a ser a mais simples e intuitiva possível. 
