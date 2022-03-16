@@ -5,7 +5,7 @@ A linguagem YC tem por finalidade ser usada para especificação de aspectos est
 
 Este documento tem por finalidade a apresentação dessa linguagem. Essa apresentação de sua sintáxe e semântica será feita por meio de sua aplicação em exemplos de uso concretos. A seguir, primeiramente, apresentaremos suas palavras-reservadas tipos de atributos, símbolos e operadores.
 
-Uma especificação de dados feitas com a linguagem YC deve ser empregada com a plataforma Ycodify, por meio de sua IDE online (acessar em: https://api.ycodify.com/ide). Para conhecer o uso da linguagem YC conjugada a IDE, acesse esse documento: https://api.ycodify.com/ide/documentation.
+Uma especificação de dados feitas com a linguagem YC deve ser empregada com a plataforma Ycodify, por meio do Console WEB (acessar em: https://api.ycodify.com/app/index.html).
 
 
 
