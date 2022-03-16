@@ -1,4 +1,4 @@
-## (Sumário) Documentação
+## Sumário de Documentação
 
 Com os documentos a seguir, apresentamos o uso da linguagem _YCL_.
 
