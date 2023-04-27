@@ -1,3 +1,4 @@
+
 # Quickstart - Linguagem YCL.
 
 
@@ -14,14 +15,17 @@ Uma especificação de dados feitas com a linguagem YC deve ser empregada com a 
 As seguintes palavras chaves não devem fazer parte do nome de conceitos (verbos ou substantivos) empregados para descrever um domínio de negócios de uma aplicação:
 
  - **schema**: esta palavra deve ser usada para declarar a existência de um esquema de dados, no qual toda especificação do sistema deverá estar contida.
- - **entity**: palavra que deve ser usada para declarar em um *schema* os conceitos (substantivos e verbos) que sintetizam dados em um domínio de negócios. 
+ - **entity**: palavra que deve ser usada para declarar em um *schema* os conceitos (substantivos e verbos) que sintetizam dados em um domínio de negócios. Essa é uma entidade concreta, ou seja, faz referência a registros que podemo ser persistidos em bases de dados. 
+ - **abstract**: palavra reservada que deve ser usada para declarar uma entidade como abstrata. Esse tipo de entidade, para que possa existir, só existirá como uma extensão de uma entidade concreta. 
+ - **component**: palavra reservada que deve ser usada para especificar que uma dada entidade deve ser compreendida como um arranjo de dados complexo, declarado em uma relação do tipo 1 para 1 em outras entidades. 
  - **extends**: palavra reservada que deve ser usada para especificar que uma dada entidade é uma especialização de outra entidade. 
- - **final**: palavra reservada que deve ser usada para especificar que uma dada entidade não pode ser especializada em outra. 
+ - **enumeration**: palavra reservada que deve ser usada para especificar que uma dada entidade é deve ser encarada como um enumeration. Tal enumeration pode ser usado, portanto, como um tipo para um atributo em outra entidade, seu espaço de valores estará restrito aos valores definidos no enumeration. 
+ - **final**: palavra reservada que deve ser usada para especificar que uma dada entidade não pode ser especializada por outra. 
  - **comment**: palavra reservada que deve ser usada informar comentários acerca de um objeto YC (a saber: schema, entity, attribute, relationship e account).  
 
 > As próximas palavras listadas serão definidas apenas no contexto adequado à seu uso.
 
-- **enable**, **concurrencyControl**, **accessControl**, **read**, **write**, **persistence**, **uniqueKey**, **indexKey**, **businessRule**, **unique**, **nullable**
+- **enable**, **concurrencyControl**,**partition**, **accessControl**, **read**, **write**, **persistence**, **uniqueKey**, **indexKey**, **businessRule**, **unique**, **nullable**
 
 
 
@@ -29,7 +33,7 @@ As seguintes palavras chaves não devem fazer parte do nome de conceitos (verbos
 
 A lista de tipos canônicos de dados atualmente disponíveis para tipagem de atributos em entidades é:
 
-- **String**, **Integer**, **Long**, **Boolean**, **Double**, **Timestamp**
+- **String**, **Text**, **Integer**, **Long**, **Boolean**, **Double**, **Timestamp**
 
 
 
@@ -103,8 +107,7 @@ O Diagrama de Classes da UML representado na figura 1 pode ser escrito com YC da
 <p align="center">|Código 1|</p>
 
 
-
-A forma da escrita acima, presente em Código 1, é uma escrita pobre que se baseia no uso de valores/instruções padrão para configuração do serviço de backend da plataforma para uma aplicação de software. Em termos de expressividade, podemos ter esse schema em Código 1 enriquecido, conforme a representação em Código 2.
+A forma da escrita acima, presente em Código 1, é uma escrita pobre que se baseia no uso de valores/instruções padrão para configuração do serviço de backend da plataforma para uma aplicação de software. Em termos de expressividade, podemos ter esse _schema_ em Código 1 enriquecido, conforme a representação em Código 2.
 
 
 
@@ -150,53 +153,77 @@ Caso seja necessário uma especificação de tipo distinta do padrão, o usuári
 17.    }
 18.    entity copia (
 19.      concurrencyControl
-20.      persistence (
-21.        uniqueKey [
-22.          id, livro
-23.        ]
-24.      )
-25.    ) {
-26.      copiaid (
-27.        !nullable
-28.      )
-29.      de (
-30.        livro
-31.      )
-32.      emprestadoa (
-33.        !nullable
-34.      )
-35.      emprestadoem (
-36.        Long
-37.        !nullable
-38.      )
-39.      devolvidoem (
-40.        Long
-41.      )
-42.    }
-43.    entity historico (
-44.      businessRule
-45.      persistence (
-46.        indexKey [
-47.          emprestada, emprestadoem
-48.        ]
-49.      ) 
-50.    ) {
-51.      copia (
-52.        copia
-53.      )
-54.      emprestadoa (
-55.        !nullable
-56.      )
-57.      emprestadoem (
-58.        Long
-59.        !nullable
-60.      )
-61.      devolvidoem (
-62.        Long
-63.        !nullable
-64.      )
-65.    }
-66.  }
+20.      uniqueKey [
+21.        copiaid, livro
+22.      ]
+23.    ) {
+24.      copiaid (
+25.        !nullable
+26.      )
+27.      de (
+28.        livro
+29.      )
+30.      emprestadoa (
+31.        !nullable
+32.      )
+33.      emprestadoem (
+34.        Long
+35.        !nullable
+36.      )
+37.      devolvidoem (
+38.        Long
+39.      )
+40.    }
+41.    entity historico (
+42.      sql
+43.      businessRule (
+44.         create (
+45.           before
+46.           uri:https://...
+47.         )
+48.         read (
+49.           after
+50.           uri:https://...
+51.         )
+52.         update (
+53.           before
+54.           after
+56.         )
+57.         delete
+58.      )
+59.      partition (
+60.        emprestadoem
+61.        range (
+62.          ano23semestre1 [
+63.            1672531200000
+64.            1688169600000
+65.          ]
+66.          ano23semestre2 [
+67.            1688169600000
+68.            1698796800000
+69.          ]
+70.        )
+71.      )
+72.      indexKey [
+73.        emprestada, emprestadoem
+74.      ]
+75.    ) {
+76.      copia (
+77.        copia
+78.      )
+79.      emprestadoa (
+80.        !nullable
+81.      )
+82.      emprestadoem (
+83.        Long
+84.        !nullable
+85.      )
+86.      devolvidoem (
+87.        Long
+88.        !nullable
+89.      )
+90.    }
+91.  }
 ```
 <p align="center">|Código 2|</p>
 
@@ -212,7 +239,7 @@ Por padrão, caso não explicite-se o uso de **enabled** na definição de um **
 
 ### Palavra reservada: _concurrencyControl_
 
-Em Código 2, linha 19, a palavra reservada **concurrencyControl** define que a plataforma deve tratar o acesso concorrente às instâncias de dados da entidade *copia*. Ou seja, funcionalmente falando, todo acesso que implique alteração do estado de uma dada instância de dados dessa tal entidade, *copia*, só será realizado mediante checagem de versão da instância do dado em questão. Caso as versões divirjam, a alteração não será efetuada e uma exceção serão lançada. 
+Em Código 2, linha 19, a palavra reservada **concurrencyControl** define que a plataforma deve tratar o acesso concorrente às instâncias de dados da entidade *copia*. Ou seja, funcionalmente falando, todo acesso que implique alteração do estado de uma dada instância de dados dessa tal entidade, `copia`, só será realizado mediante checagem de versão da instância do dado em questão. Caso as versões divirjam, a alteração não será efetuada e uma exceção serão lançada. 
 
 Por padrão, toda entidade declarada não terá essa funcionalidade a ela aplicada. Ou seja, seu valor padrão é **!concurrencyControl** (*ver detalhe operacional*). 
 
@@ -220,20 +247,41 @@ Por padrão, toda entidade declarada não terá essa funcionalidade a ela aplica
 
 ### Palavra reservada: _businessRule_
 
-Em Código 2, linha 44, a palavra reservada **businessRule** está posta na entidade para definir para a plataforma Ycodify que ela deve invocar a regra de negócios (criada e enviada para a plataforma no instante do deployment do **schema**) associada à entidade (*historico*, no caso), exatamente no instante em que quaisquer das operações de persistência ou acesso às instâncias de dados da entidade sejam requisitadas à plataforma. 
+Em Código 2, linha 43, a palavra reservada **businessRule** está posta na entidade para definir para a plataforma Ycodify que ela deve invocar a regra de negócios (criada e enviada para a plataforma no instante do _deployment_ do **schema**) associada à entidade (`historico`, no caso). A regra de execução da regra de negócio implica as declarações que especificam o tipo de operação, e o momento em que devem ser realizadas relativa mente a esse tipo de operação (_after_, _before_ ou em ambos os momentos nas cercanias da operação propriamente dita). 
 
-As regras de negócio são artefatos de código, escritos em Java ou Javascript, que contém alguma lógica necessária de ser executada, no contexto do backend, antes ou depois de alguma operação de persistência ou acesso às instâncias de dados das entidades já armazenadas (*ver detalhe operacional*).  
+As regras de negócio são artefatos de código, escritos em qualquer linguagem suportada pela [AWS Lambda Functions](https://aws.amazon.com/pt/getting-started/hands-on/run-serverless-code/), que contém alguma lógica necessária de ser executada, no contexto do backend, antes ou depois de alguma operação de persistência ou acesso às instâncias de dados das entidades já armazenadas (*ver detalhe operacional*). Siga as instruções de como criar o pacote de uma Lambda Function na AWS, em termos das interfaces que precisam ser implementadas em código, gere o pacote, conforme as instruções e suba-o na infraestrutura da AWS, ou faça o upload desse pacote em nossa própria infra-estrutura.
+
+Caso a opção de realizar o _deploy_ dessa _lambda function_ ocorra diretamente via AWS, basta informar a URI da _function_ (fornecida pela AWS) conforme apresentado em Código 2, nas linhas 46 e 50. Caso contrário, fica dispensada essa informação, bastando apenas informar o momento em que a função deve ser executada, conforme linhas: 45, 53, 54 e 57 (o default, declara a necessidade de execução de regra de negócio e o _before_)
+
+**IMPORTANTE**: em qualquer dos casos, chegada a hora de executar as chamadas às lambda _functions_ informadas, serão enviadas as _queries_ das requisições de persistência tal como recebidas pela interface do serviço de persistência da plataforma. Também, em qualquer dos casos, o retorno aguardado da requisição deve ser uma _query_ como outra qualquer enviada para a interface do mesmo serviço de persistência. O status code da resposta à requisição de serviço da função _lambda_, em qualquer dos casos, deverá ser 200. Em qualquer dos casos, recebido um status code com valor distinto, será gerada uma exceção na plataforma que terá precisamente o mesmo status code dessa resposta para o agente requisitor original. 
 
 
 
-### Palavra reservada: _persistence_, *uniqueKey* e *indexKey*
+### Palavra reservada: _partition_, *uniqueKey* e *indexKey*
 
-As linhas 20 e 44, no Código 2, aparece a palavra reservada **persistence**. Essa palavra reservada abriga sob si, o uso de duas outras palavras reservadas e, portanto, devem ser usadas de forma conjugada. Essas são as palavras reservadas sob **persistence**: **indexKey** (linha 45) e **uniqueKey** (linha 21). 
+As linhas 42 e 74, no Código 2, apresentam três tipos de palavras chaves cujo significado é conforme informado a seguir.
 
-A palavra reservada **uniqueKey** define a oportunidade para o analista de dados informar a necessidade de compor atributos (um ou mais) como sendo um único atributo (composto), com a implicação de que o espaço de valores a eles atribuídos deve conter sempre valores únicos. Por sua vez, **indexKey**, informa uma lista de atributos (um ou mais) que devem ser compostos no sentido de realizarem uma chave de busca com o objetivo de acelerar a busca, em casos em que a velocidade de acesso à instância de dados por eles apontada seja algo grave. 
+**partition** é uma palavra reservada com o fim de definir uso do mecanismo de partição de dados --  de três tipos: _range_, _hash_ e _list_ -- no Código 2, linhas de 59 a 71. Seu uso é definido pela necessidade do usuário do serviço da plataforma Ycodify em particionar o espaço de dados persistidos, relativo a uma entidade, para efeitos, por exemplo, de maior eficiência em termos de busca de dados -- em circunstâncias em que a quantidade de dados armazenados cresça muito.  A estrutura geral de uso dessa palavra pode ser vista na snippet 01.
 
-Por padrão, o **indexKey** e o **uniqueKey** não terão nenhum atributo(s) a eles associados no momento de sua definição. Ou seja, o array de atributos associados é vazio.
+```
+partition (
+  <attributeNameForPartition>
+  <partitionType> (
+    <partitinName> (
+       // properties
+    )
+  )
+)
+``` 
+<p align="center">|Snippet 1|</p>
 
+Toda partição deve ser declarada conforme o snippet 01. ` <attributeNameForPartition>` especifica precisamente o nome do atributo por meio do qual a partição se realizará -- linha 60. As linhas que vão da 61 a 74 definem o tipo da partição (linha 61 mais especificamente), cada uma das partições (linhas 62 e 66) e as propriedades dessas partições entre os colchetes. 
+
+No caso, o exemplo apresentado em Código 02, está definido um particionamento para a entidade `historico`. Esse particionamento implica que essa entidade será particionada em duas partições, `ano23semestre1` e` ano23semestre2`. Esses nomes são alusivos ao fato de que os dados serão persistidos (ou recuperados) em (ou a partir de) estruturas físicas distintas -- a entidade `historico` _não_ será uma única estrutura de base de dados como é o caso das demais entidade no _schema_ apresentado em Código 02. Esse particionamento, para ocorrer, toma por base os valores do atributo  `emprestadoem`. Ou seja, registros de `historico` serão persistidos conforme o valor do atributo `emprestadoem` -- se entre 1672531200000 e 1688169600000, `ano23semestre1`; se entre 1688169600000 e 1698796800000, `ano23semestre2`.
+
+**IMPORTANTE**: as operações CREATE, READ, UPDATE e DELETE não precisam estar conscientes das partições. O roteamento ocorrerá internamente à plataforma de forma automática.
+
+Por sua vez, a palavra reservada **uniqueKey** (Código 2, linha 20) define a oportunidade para o analista de dados informar a necessidade de compor atributos (um ou mais) como sendo um único atributo (composto), com a implicação de que o espaço de valores a eles atribuídos deve conter sempre valores únicos. Por sua vez, **indexKey** (Código 2, linha 72), informa uma lista de atributos (um ou mais) que devem ser compostos no sentido de realizarem uma chave de busca com o objetivo de acelerar a busca, em casos em que a velocidade de acesso à instância de dados por eles apontada seja algo grave. 
 
 
 ### Palavra reservada: _accessControl_, *read* e *write*
