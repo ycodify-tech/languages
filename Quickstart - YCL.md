@@ -192,38 +192,36 @@ Caso seja necessário uma especificação de tipo distinta do padrão, o usuári
 57.         delete
 58.      )
 59.      partition (
-60.        emprestadoem
-61.        range (
-62.          ano23semestre1 [
-63.            1672531200000
-64.            1688169600000
-65.          ]
-66.          ano23semestre2 [
-67.            1688169600000
-68.            1698796800000
-69.          ]
-70.        )
-71.      )
-72.      indexKey [
-73.        emprestada, emprestadoem
-74.      ]
-75.    ) {
-76.      copia (
-77.        copia
-78.      )
-79.      emprestadoa (
-80.        !nullable
-81.      )
-82.      emprestadoem (
-83.        Long
-84.        !nullable
-85.      )
-86.      devolvidoem (
-87.        Long
-88.        !nullable
-89.      )
-90.    }
-91.  }
+60.        emprestadoe
+61.        ano23semestre1 [
+62.          1672531200000
+63.          1688169600000
+64.        ]
+65.        ano23semestre2 [
+66.          1688169600000
+67.          1698796800000
+68.        ]
+69.      )
+70.      indexKey [
+71.        emprestada, emprestadoem
+72.      ]
+73.    ) {
+74.      copia (
+75.        copia
+76.      )
+77.      emprestadoa (
+78.        !nullable
+79.      )
+80.      emprestadoem (
+81.        Long
+82.        !nullable
+83.      )
+84.      devolvidoem (
+85.        Long
+86.        !nullable
+87.      )
+88.    }
+89.  }
 ```
 <p align="center">|Código 2|</p>
 
@@ -261,21 +259,19 @@ Caso a opção de realizar o _deploy_ dessa _lambda function_ ocorra diretamente
 
 As linhas 42 e 74, no Código 2, apresentam três tipos de palavras chaves cujo significado é conforme informado a seguir.
 
-**partition** é uma palavra reservada com o fim de definir uso do mecanismo de partição de dados --  de três tipos: _range_, _hash_ e _list_ -- no Código 2, linhas de 59 a 71. Seu uso é definido pela necessidade do usuário do serviço da plataforma Ycodify em particionar o espaço de dados persistidos, relativo a uma entidade, para efeitos, por exemplo, de maior eficiência em termos de busca de dados -- em circunstâncias em que a quantidade de dados armazenados cresça muito.  A estrutura geral de uso dessa palavra pode ser vista na snippet 01.
+**partition** é uma palavra reservada com o fim de definir uso do mecanismo de partição de dados --  de três tipos: _range_, _hash_ e _list_ -- no Código 2, linhas de 59 a 69. Seu uso é definido pela necessidade do usuário do serviço da plataforma Ycodify em particionar o espaço de dados persistidos, relativo a uma entidade, para efeitos, por exemplo, de maior eficiência em termos de busca de dados -- em circunstâncias em que a quantidade de dados armazenados cresça muito.  A estrutura geral de uso dessa palavra pode ser vista na snippet 01.
 
 ```
 partition (
   <attributeNameForPartition>
-  <partitionType> (
-    <partitinName> (
-       // properties
-    )
+  <partitinName> (
+    // properties
   )
 )
 ``` 
 <p align="center">|Snippet 1|</p>
 
-Toda partição deve ser declarada conforme o snippet 01. ` <attributeNameForPartition>` especifica precisamente o nome do atributo por meio do qual a partição se realizará -- linha 60. As linhas que vão da 61 a 74 definem o tipo da partição (linha 61 mais especificamente), cada uma das partições (linhas 62 e 66) e as propriedades dessas partições entre os colchetes. 
+Toda partição deve ser declarada conforme o snippet 01. ` <attributeNameForPartition>` especifica precisamente o nome do atributo por meio do qual a partição se realizará -- linha 60. As linhas que vão da 59 a 69 definem a partição propriamente dita, com cada uma das partições (linhas 61 e 68) e as propriedades dessas partições entre os colchetes. 
 
 No caso, o exemplo apresentado em Código 02, está definido um particionamento para a entidade `historico`. Esse particionamento implica que essa entidade será particionada em duas partições, `ano23semestre1` e` ano23semestre2`. Esses nomes são alusivos ao fato de que os dados serão persistidos (ou recuperados) em (ou a partir de) estruturas físicas distintas -- a entidade `historico` _não_ será uma única estrutura de base de dados como é o caso das demais entidade no _schema_ apresentado em Código 02. Esse particionamento, para ocorrer, toma por base os valores do atributo  `emprestadoem`. Ou seja, registros de `historico` serão persistidos conforme o valor do atributo `emprestadoem` -- se entre 1672531200000 e 1688169600000, `ano23semestre1`; se entre 1688169600000 e 1698796800000, `ano23semestre2`.
 
