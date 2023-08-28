@@ -268,7 +268,7 @@ O comando que chega à interface do serviço de persistência Ycodify assemelha-
 }
 ```
 
-Desse comando, os objetos serão extraídos um a um (dos postos no JSON acima, sob a chave _data_) e serão enviados via requisições HTTP POST ao endpoint da função de regra de negócios especificada:
+Desse comando, os objetos serão extraídos um a um (dos postos no JSON acima, sob a chave _data_) e serão enviados via requisições HTTP POST ao endpoint da função de regra de negócios especificada: 
 ```
 {
     "nome":"josé",
