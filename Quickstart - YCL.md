@@ -1,4 +1,5 @@
 
+
 # Quickstart - Linguagem YCL.
 
 
@@ -247,11 +248,11 @@ Por padrão, toda entidade declarada não terá essa funcionalidade a ela aplica
 
 Em Código 2, linha 43, a palavra reservada **businessRule** está posta na entidade para definir para a plataforma Ycodify que ela deve invocar a regra de negócios (criada e enviada para a plataforma no instante do _deployment_ do **schema**) associada à entidade (`historico`, no caso). A regra de execução da regra de negócio implica as declarações que especificam o tipo de operação, e o momento em que devem ser realizadas relativa mente a esse tipo de operação (_after_, _before_ ou em ambos os momentos nas cercanias da operação propriamente dita). 
 
-As regras de negócio são artefatos de código, escritos em qualquer linguagem suportada pela [AWS Lambda Functions](https://aws.amazon.com/pt/getting-started/hands-on/run-serverless-code/), que contém alguma lógica necessária de ser executada, no contexto do backend, antes ou depois de alguma operação de persistência ou acesso às instâncias de dados das entidades já armazenadas (*ver detalhe operacional*). Siga as instruções de como criar o pacote de uma Lambda Function na AWS, em termos das interfaces que precisam ser implementadas em código, gere o pacote, conforme as instruções e suba-o na infraestrutura da AWS, ou faça o upload desse pacote em nossa própria infra-estrutura.
+As regras de negócio são artefatos de código, escritos em qualquer linguagem suportada pela [AWS Lambda Functions](https://aws.amazon.com/pt/getting-started/hands-on/run-serverless-code/), que contém alguma lógica necessária de ser executada, no contexto do backend, antes ou depois de alguma operação de persistência de dados das entidades presentes no _schema_. Siga as instruções de como criar o pacote de uma Lambda Function na AWS, em termos das interfaces que precisam ser implementadas em código, gere o pacote, conforme as instruções e suba-o na infraestrutura da AWS, ou faça o upload desse pacote em nossa própria infra-estrutura.
 
 Caso a opção de realizar o _deploy_ dessa _lambda function_ ocorra diretamente via AWS, basta informar a URI da _function_ (fornecida pela AWS) conforme apresentado em Código 2, nas linhas 46 e 50. Caso contrário, fica dispensada essa informação, bastando apenas informar o momento em que a função deve ser executada, conforme linhas: 45, 53, 54 e 57 (o default, declara a necessidade de execução de regra de negócio e o _before_)
 
-**IMPORTANTE**: em qualquer dos casos, chegada a hora de executar as chamadas às lambda _functions_ informadas, serão enviadas as _queries_ das requisições de persistência tal como recebidas pela interface do serviço de persistência da plataforma. Também, em qualquer dos casos, o retorno aguardado da requisição deve ser uma _query_ como outra qualquer enviada para a interface do mesmo serviço de persistência. O status code da resposta à requisição de serviço da função _lambda_, em qualquer dos casos, deverá ser 200. Em qualquer dos casos, recebido um status code com valor distinto, será gerada uma exceção na plataforma que terá precisamente o mesmo status code dessa resposta para o agente requisitor original. 
+**IMPORTANTE**: em qualquer dos casos, chegada a hora de executar as chamadas às lambda _functions_ informadas, serão enviados, dado a dado, cada um dos quais estão presentes no array sob a chave _data_, em requisições que conste qualquer dos commands: CREATE, UPDATE, DELETE, tal como recebidas pela interface do serviço de persistência da plataforma. Também, em qualquer dos casos, o retorno aguardado da requisição deve ser precisamente o dado no formato como enviado. O status code da resposta à requisição de serviço da função _lambda_, em qualquer dos casos, será 200. Em qualquer dos casos, recebido um status code com valor distinto, será gerada uma exceção na plataforma que terá precisamente o mesmo status code dessa resposta externa a plataforma Ycodify, encaminhada ao agente requeridor original. 
 
 
 
@@ -321,4 +322,3 @@ Por padrão, caso não seja declarada essa palavra reservada como definição de
 A palavra reservada **nullable**, por sua vez, deve ser usada entre parênteses na declaração de um atributo qualquer (ver Código 2, linhas 37 e 58). Seu uso informa que um tal atributo que a declare deverá aceitar como valor, se necessário, inclusive o valor nulo. Ou seja, é possível persistir intância de dados de uma dada entidade sem que haja valores associados a esse tal atributo. 
 
 Por padrão, todo atributo é considerado declarado como **nullable**.
-
