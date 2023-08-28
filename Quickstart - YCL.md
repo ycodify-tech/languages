@@ -276,7 +276,7 @@ Desse comando, os objetos serão extraídos um a um (dos postos no JSON acima, s
 }
 ```
 
-O resultado do processamento da função de regra de negócios (um objeto de dados relativo a alguma entidade no schema de dados) deve ser encaminhado como resposta à requisição HTTP POST, com status 200. Ou uma exceção será lançada.
+O resultado do processamento da função de regra de negócios (um objeto de dados relativo à mesma entidade no schema de dados na requisição originial) deve ser encaminhado como resposta à requisição HTTP POST, com status 200. Ou uma exceção será lançada.
 
 ### Palavra reservada: _partition_, *uniqueKey* e *indexKey*
 
