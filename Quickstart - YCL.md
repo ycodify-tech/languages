@@ -252,9 +252,31 @@ As regras de negócio são artefatos de código, escritos em qualquer linguagem 
 
 Caso a opção de realizar o _deploy_ dessa _lambda function_ ocorra diretamente via AWS, basta informar a URI da _function_ (fornecida pela AWS) conforme apresentado em Código 2, nas linhas 46 e 50. Caso contrário, fica dispensada essa informação, bastando apenas informar o momento em que a função deve ser executada, conforme linhas: 45, 53, 54 e 57 (o default, declara a necessidade de execução de regra de negócio e o _before_)
 
-**IMPORTANTE**: em qualquer dos casos, chegada a hora de executar as chamadas às lambda _functions_ informadas, serão enviados, dado a dado, cada um dos quais estão presentes no array sob a chave _data_, em requisições que conste qualquer dos commands: CREATE, UPDATE, DELETE, tal como recebidas pela interface do serviço de persistência da plataforma. Também, em qualquer dos casos, o retorno aguardado da requisição deve ser precisamente o dado no formato como enviado. O status code da resposta à requisição de serviço da função _lambda_, em qualquer dos casos, será 200. Em qualquer dos casos, recebido um status code com valor distinto, será gerada uma exceção na plataforma que terá precisamente o mesmo status code dessa resposta externa a plataforma Ycodify, encaminhada ao agente requeridor original. 
+**IMPORTANTE**: em qualquer dos casos, chegada a hora de executar as chamadas às lambda _functions_ informadas, serão enviados, dado a dado, cada um dos quais estão presentes no array sob a chave _data_, em requisições que conste qualquer dos commands: CREATE, UPDATE, DELETE, tal como recebidas pela interface do serviço de persistência da plataforma. Também, em qualquer dos casos, o retorno aguardado da requisição deve ser precisamente o dado no formato como enviado. O status code da resposta à requisição de serviço da função _lambda_, em qualquer dos casos, será 200. Em qualquer dos casos, recebido um status code com valor distinto, será gerada uma exceção na plataforma que terá precisamente o mesmo status code dessa resposta externa a plataforma Ycodify, encaminhada ao agente requeridor original. Exemplificadamente:
 
+O comando que chega à interface do serviço de persistência Ycodify assemelha-se a algo tal como:
+```
+{
+  "action":"CREATE",
+  "data":[{
+    "livro": {
+      "titulo":"A Ilha",
+      "autor": "José Saramago",
+      "isbn":"3efg-456y712"
+    }
+  }]
+}
+```
 
+Desse comando, os objetos serão extraídos um a um (dos postos no JSON acima, sob a chave _data_) e serão enviados via requisições HTTP POST ao endpoint da função de regra de negócios especificada:
+```
+{
+    "nome":"josé",
+    "idade": 19
+}
+```
+
+O resultado do processamento da função de regra de negócios (um objeto de dados relativo a alguma entidade no schema de dados) deve ser encaminhado como resposta à requisição HTTP POST, com status 200. Ou uma exceção será lançada.
 
 ### Palavra reservada: _partition_, *uniqueKey* e *indexKey*
 
