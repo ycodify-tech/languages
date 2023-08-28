@@ -1,5 +1,6 @@
 
 
+
 # Quickstart - Linguagem YCL.
 
 
@@ -246,13 +247,17 @@ Por padrão, toda entidade declarada não terá essa funcionalidade a ela aplica
 
 ### Palavra reservada: _businessRule_
 
-Em Código 2, linha 43, a palavra reservada **businessRule** está posta na entidade para definir para a plataforma Ycodify que ela deve invocar a regra de negócios (criada e enviada para a plataforma no instante do _deployment_ do **schema**) associada à entidade (`historico`, no caso). A regra de execução da regra de negócio implica as declarações que especificam o tipo de operação, e o momento em que devem ser realizadas relativa mente a esse tipo de operação (_after_, _before_ ou em ambos os momentos nas cercanias da operação propriamente dita). 
+Em Código 2, linha 43, a palavra reservada **businessRule** está posta na entidade para definir para a plataforma Ycodify que ela deve invocar a regra de negócios (criada e enviada para a plataforma no instante do _deployment_ do **schema**) associada à entidade (`historico`, no caso). A regra de execução da regra de negócio implica as declarações que especificam o tipo de operação, e o momento em que devem ser realizadas relativamente a esse tipo de operação (_after_, _before_ ou em ambos os momentos nas cercanias da operação propriamente dita). 
 
-As regras de negócio são artefatos de código, escritos em qualquer linguagem suportada pela [AWS Lambda Functions](https://aws.amazon.com/pt/getting-started/hands-on/run-serverless-code/), que contém alguma lógica necessária de ser executada, no contexto do backend, antes ou depois de alguma operação de persistência de dados das entidades presentes no _schema_. Siga as instruções de como criar o pacote de uma Lambda Function na AWS, em termos das interfaces que precisam ser implementadas em código, gere o pacote, conforme as instruções e suba-o na infraestrutura da AWS, ou faça o upload desse pacote em nossa própria infra-estrutura.
+As regras de negócio são artefatos de código, escritos em qualquer linguagem suportada pela [AWS Lambda Functions](https://aws.amazon.com/pt/getting-started/hands-on/run-serverless-code/), que contém alguma lógica necessária de ser executada, no contexto do backend, antes ou depois de alguma operação de persistência de dados das entidades presentes no _schema_. A requisição implica um endpoint HTTP, usando o método POST. Siga as instruções de como criar o pacote de uma Lambda Function na AWS, em termos das interfaces que precisam ser implementadas em código, gere o pacote, conforme as instruções e suba-o na infraestrutura da AWS, ou faça o upload desse pacote em nossa própria infra-estrutura.
 
 Caso a opção de realizar o _deploy_ dessa _lambda function_ ocorra diretamente via AWS, basta informar a URI da _function_ (fornecida pela AWS) conforme apresentado em Código 2, nas linhas 46 e 50. Caso contrário, fica dispensada essa informação, bastando apenas informar o momento em que a função deve ser executada, conforme linhas: 45, 53, 54 e 57 (o default, declara a necessidade de execução de regra de negócio e o _before_)
 
-**IMPORTANTE**: em qualquer dos casos, chegada a hora de executar as chamadas às lambda _functions_ informadas, serão enviados, dado a dado, cada um dos quais estão presentes no array sob a chave _data_, em requisições que conste qualquer dos commands: CREATE, UPDATE, DELETE, tal como recebidas pela interface do serviço de persistência da plataforma. Também, em qualquer dos casos, o retorno aguardado da requisição deve ser precisamente o dado no formato como enviado. O status code da resposta à requisição de serviço da função _lambda_, em qualquer dos casos, será 200. Em qualquer dos casos, recebido um status code com valor distinto, será gerada uma exceção na plataforma que terá precisamente o mesmo status code dessa resposta externa a plataforma Ycodify, encaminhada ao agente requeridor original. Exemplificadamente:
+A respeito de _Criar_ ou _Atualizar_ a propriedade **businessRule**: toda entidade, ainda que não explicitamente definida, possuem regras de negócios a elas associadas. Portanto, você pode explicitamente defini-las no momento em que entidades são criadas, ou em momento posterior à criação de entidades. Em caso de definição do uso de regras de negócios após a criação da entidade, a palavra reservada **businessRule** deve ser prefixada com a marca '**u:**' (sem aspas simples) e sem espaço entre a marca e a palavra reservada, antes de realizar o _deploy_.
+
+**IMPORTANTE**: em qualquer dos casos, chegada a hora de executar as chamadas às lambda _functions_ informadas, serão enviados, dado a dado, cada um dos quais presentes no array sob a chave _data_, em requisições que conste qualquer dos commands CREATE, UPDATE, DELETE, tal como recebidas pela interface do serviço de persistência da plataforma. Também, em qualquer dos casos, o retorno aguardado da requisição deve ser precisamente o dado no formato como enviado. O _status code_ da resposta à requisição da função, em caso de sucesso, será 200. Em caso de um status code distinto de 200 será gerada uma exceção pela plataforma. Essa exceção será empacotada como resposta e essa carregará precisamente o mesmo _status code_ recebido da função. 
+
+Exemplificadamente, a forma dos dados enviados e recebidos, para e da função são como a seguir:
 
 O comando que chega à interface do serviço de persistência Ycodify assemelha-se a algo tal como:
 ```
@@ -276,7 +281,6 @@ Desse comando, os objetos serão extraídos um a um (dos postos no JSON acima, s
 }
 ```
 
-O resultado do processamento da função de regra de negócios (um objeto de dados relativo à mesma entidade no schema de dados na requisição originial) deve ser encaminhado como resposta à requisição HTTP POST, com status 200. Ou uma exceção será lançada.
 
 ### Palavra reservada: _partition_, *uniqueKey* e *indexKey*
 
